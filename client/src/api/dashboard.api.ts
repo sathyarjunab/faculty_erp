@@ -1,5 +1,12 @@
 import { api } from './client';
-import type { DashboardSummary, DashboardAnalytics, ScoreChangeLogEntry, PaginationMeta } from '../types';
+import type {
+  DashboardSummary,
+  DashboardAnalytics,
+  ScoreChangeLogEntry,
+  PaginationMeta,
+  HomeroomsResponse,
+  HomeroomAnalytics,
+} from '../types';
 
 interface Envelope<T> {
   data: T;
@@ -19,4 +26,9 @@ export const dashboardApi = {
     api
       .get<LogsEnvelope>('/dashboard/logs', { params: { page, limit } })
       .then((r) => ({ logs: r.data.data, meta: r.data.meta })),
+
+  homerooms: () => api.get<Envelope<HomeroomsResponse>>('/dashboard/homerooms').then((r) => r.data.data),
+
+  homeroomAnalytics: (sectionId: number) =>
+    api.get<Envelope<HomeroomAnalytics>>(`/dashboard/homeroom/${sectionId}/analytics`).then((r) => r.data.data),
 };

@@ -55,6 +55,7 @@ const clearAll = async (): Promise<void> => {
   await Mark.destroy({ where: {} });
   await AssignmentModel.destroy({ where: {} });
   await ExamModel.destroy({ where: {} });
+  await Subject.destroy({ where: {} });
   await EnrollmentModel.destroy({ where: {} });
   await StudentModel.destroy({ where: {} });
   await SectionModel.destroy({ where: {} });
@@ -186,7 +187,7 @@ const seed = async (): Promise<void> => {
   const anitaG10B = await assign(anita.id, 'MATH', 'Grade 10', 'B');
   await assign(anita.id, 'MATH', 'Grade 1', 'A');
 
-  await assign(rahul.id, 'SCI', 'Grade 10', 'A');
+  const rahulG10A = await assign(rahul.id, 'SCI', 'Grade 10', 'A');
   await assign(rahul.id, 'SCI', 'Grade 1', 'B');
 
   await assign(meera.id, 'ENG', 'Grade 10', 'B');
@@ -242,6 +243,9 @@ const seed = async (): Promise<void> => {
 
   await seedMarksFor(anitaG10A, classes['Grade 10'].exams, 2);
   await seedMarksFor(anitaG10B, classes['Grade 10'].exams, 1);
+  // Rahul teaches Science to Grade 10-A (Anita's homeroom) — shows up in her
+  // whole-class analytics and as an "other teacher" edit in her class log.
+  await seedMarksFor(rahulG10A, classes['Grade 10'].exams, 1);
 
   logger.info('──────────────────────────────────────────────');
   logger.info('Seed complete. Sample login (all teachers): password "Password123"');

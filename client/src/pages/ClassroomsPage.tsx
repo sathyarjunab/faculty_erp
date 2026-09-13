@@ -15,6 +15,7 @@ import {
 import ClassIcon from '@mui/icons-material/ClassOutlined';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import GroupsIcon from '@mui/icons-material/Groups';
+import StarIcon from '@mui/icons-material/Star';
 import { classroomsApi } from '../api/classrooms.api';
 import { getErrorMessage } from '../api/client';
 import type { ClassroomsResponse } from '../types';
@@ -73,29 +74,50 @@ const ClassroomsPage = () => {
             gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
           }}
         >
-          {filtered.map((c) => (
-            <Card key={c.sectionId}>
-              <CardActionArea onClick={() => navigate(`/classrooms/${c.sectionId}`)} sx={{ height: '100%' }}>
-                <CardContent>
-                  <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
-                    <Avatar sx={{ bgcolor: 'primary.main' }}>
-                      <ClassIcon />
-                    </Avatar>
-                    <Box>
-                      <Typography variant="h6">{c.className}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Section {c.sectionName}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                  <Stack direction="row" spacing={1}>
-                    <Chip size="small" icon={<MenuBookIcon />} label={`${c.subjectCount} subject${c.subjectCount === 1 ? '' : 's'}`} />
-                    <Chip size="small" icon={<GroupsIcon />} label={`${c.studentCount} students`} variant="outlined" />
-                  </Stack>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          ))}
+          {filtered.map((c) => {
+            const clickable = c.subjectCount > 0;
+            const body = (
+              <CardContent>
+                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+                  <Avatar sx={{ bgcolor: c.isClassTeacher ? 'secondary.main' : 'primary.main' }}>
+                    <ClassIcon />
+                  </Avatar>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography variant="h6">{c.className}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Section {c.sectionName}
+                    </Typography>
+                  </Box>
+                </Stack>
+                <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                  {c.isClassTeacher && (
+                    <Chip size="small" color="secondary" icon={<StarIcon />} label="Class teacher" />
+                  )}
+                  <Chip size="small" icon={<MenuBookIcon />} label={`${c.subjectCount} subject${c.subjectCount === 1 ? '' : 's'}`} />
+                  <Chip size="small" icon={<GroupsIcon />} label={`${c.studentCount} students`} variant="outlined" />
+                </Stack>
+                {!clickable && (
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1.5 }}>
+                    Your homeroom — you don't teach a subject here. See its analytics on the Dashboard.
+                  </Typography>
+                )}
+              </CardContent>
+            );
+            return (
+              <Card
+                key={c.sectionId}
+                sx={c.isClassTeacher ? { border: '2px solid', borderColor: 'secondary.main' } : undefined}
+              >
+                {clickable ? (
+                  <CardActionArea onClick={() => navigate(`/classrooms/${c.sectionId}`)} sx={{ height: '100%' }}>
+                    {body}
+                  </CardActionArea>
+                ) : (
+                  body
+                )}
+              </Card>
+            );
+          })}
         </Box>
       )}
     </Box>

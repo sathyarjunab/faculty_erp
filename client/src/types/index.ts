@@ -41,6 +41,7 @@ export interface Classroom {
   className: string | null;
   subjectCount: number;
   studentCount: number;
+  isClassTeacher: boolean;
 }
 
 export interface ClassroomsResponse {
@@ -166,4 +167,34 @@ export interface ScoreChangeLogEntry {
   newIsAbsent: boolean | null;
   action: 'create' | 'update';
   createdAt: string;
+  changedBy: string | null;
+  isOwnEdit: boolean;
+}
+
+export interface HomeroomItem {
+  sectionId: number;
+  sectionName: string;
+  classId: number | null;
+  className: string | null;
+  studentCount: number;
+}
+
+export interface HomeroomsResponse {
+  academicYear: AcademicYearRef;
+  homerooms: HomeroomItem[];
+}
+
+export interface HomeroomAnalytics {
+  academicYear: AcademicYearRef;
+  classroom: ClassroomRef;
+  kpis: {
+    students: number;
+    subjects: number;
+    averagePercentage: number | null;
+    passPercentage: number | null;
+  };
+  subjectPerformance: LabeledValue[];
+  examTrend: ExamTrendPoint[];
+  passFail: { pass: number; fail: number; absent: number };
+  gradeDistribution: GradeBucket[];
 }

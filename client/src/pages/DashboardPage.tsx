@@ -40,6 +40,7 @@ import type { DashboardSummary, DashboardAnalytics, ScoreChangeLogEntry, Paginat
 import StatCard from '../components/StatCard';
 import ChartCard from '../components/ChartCard';
 import Loading from '../components/Loading';
+import HomeroomPanel from '../components/HomeroomPanel';
 
 const PIE_COLORS = { pass: '#1f9254', fail: '#d64545', absent: '#9aa7b8' };
 const GRADE_COLORS = ['#1f9254', '#3fa66a', '#8bc34a', '#e0b21e', '#e08a1e', '#d64545'];
@@ -140,7 +141,10 @@ const DashboardPage = () => {
         />
       </Box>
 
-      {/* Charts */}
+      {/* My teaching analytics */}
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        My teaching
+      </Typography>
       <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 3 }}>
         <ChartCard title="Section performance (avg %)" empty={sectionData.length === 0}>
           <ResponsiveContainer width="100%" height="100%">
@@ -206,6 +210,9 @@ const DashboardPage = () => {
         </ChartCard>
       </Box>
 
+      {/* Homeroom (class teacher) whole-class analytics — renders only for class teachers */}
+      <HomeroomPanel />
+
       {/* Score change log */}
       <Card>
         <CardContent>
@@ -230,13 +237,14 @@ const DashboardPage = () => {
                   <TableCell>Subject</TableCell>
                   <TableCell>Exam</TableCell>
                   <TableCell>Change</TableCell>
+                  <TableCell>Changed by</TableCell>
                   <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {logs.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                    <TableCell colSpan={7} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                       No changes recorded yet.
                     </TableCell>
                   </TableRow>
@@ -251,6 +259,12 @@ const DashboardPage = () => {
                       {log.action === 'create'
                         ? `Set to ${scoreLabel(log.newScore, log.newIsAbsent)}`
                         : `${scoreLabel(log.oldScore, log.oldIsAbsent)} → ${scoreLabel(log.newScore, log.newIsAbsent)}`}
+                    </TableCell>
+                    <TableCell>
+                      {log.changedBy ?? '—'}
+                      {!log.isOwnEdit && (
+                        <Chip size="small" label="other teacher" color="info" variant="outlined" sx={{ ml: 0.75 }} />
+                      )}
                     </TableCell>
                     <TableCell>
                       <Chip
