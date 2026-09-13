@@ -230,11 +230,12 @@ export const makeDashboardService = ({
     const safePage = Math.max(parseInt(String(page), 10) || 1, 1);
     const offset = (safePage - 1) * safeLimit;
 
+    // Class-teacher view: only changes to students in the teacher's homeroom classes.
     const enrollmentIds = await homeroomEnrollmentIds(teacherId, year);
-    const { rows, count } = await scoreChangeLogRepository.findVisibleForTeacher(
-      { teacherId, homeroomEnrollmentIds: enrollmentIds },
-      { limit: safeLimit, offset }
-    );
+    const { rows, count } = await scoreChangeLogRepository.findForEnrollments(enrollmentIds, {
+      limit: safeLimit,
+      offset,
+    });
 
     const logs = rows.map((log) => ({
       id: Number(log.id),

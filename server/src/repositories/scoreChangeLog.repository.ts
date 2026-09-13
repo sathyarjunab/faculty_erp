@@ -8,12 +8,6 @@ interface Pagination {
   offset: number;
 }
 
-interface VisibleScope {
-  teacherId: number;
-  // Enrollments belonging to the teacher's homeroom sections (edits by anyone here are visible).
-  homeroomEnrollmentIds: number[];
-}
-
 export const makeScoreChangeLogRepository = ({
   ScoreChangeLog,
   StudentEnrollment,
@@ -35,19 +29,16 @@ export const makeScoreChangeLogRepository = ({
     ...base,
 
     /**
-     * Logs visible to a teacher: their own edits, PLUS any teacher's edits to
-     * marks of students in the teacher's homeroom sections (class-teacher view).
+     * Logs for a set of enrollments (the class teacher's homeroom students),
+     * regardless of which teacher made the change. Newest first.
      */
-    findVisibleForTeacher: (
-      { teacherId, homeroomEnrollmentIds }: VisibleScope,
+    findForEnrollments: (
+      enrollmentIds: number[],
       { limit, offset }: Pagination
     ): Promise<{ rows: ScoreChangeLog[]; count: number }> => {
-      const or: Record<string, unknown>[] = [{ teacherId }];
-      if (homeroomEnrollmentIds.length) {
-        or.push({ enrollmentId: { [Op.in]: homeroomEnrollmentIds } });
-      }
+      if (!enrollmentIds.length) return Promise.resolve({ rows: [], count: 0 });
       return ScoreChangeLog.findAndCountAll({
-        where: { [Op.or]: or },
+        where: { enrollmentId: { [Op.in]: enrollmentIds } },
         include,
         order: [['createdAt', 'DESC']],
         limit,

@@ -40,7 +40,6 @@ import type { DashboardSummary, DashboardAnalytics, ScoreChangeLogEntry, Paginat
 import StatCard from '../components/StatCard';
 import ChartCard from '../components/ChartCard';
 import Loading from '../components/Loading';
-import HomeroomPanel from '../components/HomeroomPanel';
 
 const PIE_COLORS = { pass: '#1f9254', fail: '#d64545', absent: '#9aa7b8' };
 const GRADE_COLORS = ['#1f9254', '#3fa66a', '#8bc34a', '#e0b21e', '#e08a1e', '#d64545'];
@@ -141,12 +140,13 @@ const DashboardPage = () => {
         />
       </Box>
 
-      {/* My teaching analytics */}
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        My teaching
-      </Typography>
+      {/* Performance analytics */}
       <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 3 }}>
-        <ChartCard title="Section performance (avg %)" empty={sectionData.length === 0}>
+        <ChartCard
+          title="Section performance"
+          info="Average score (%) of each class-section you teach. Taller bar = stronger section."
+          empty={sectionData.length === 0}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={sectionData} margin={{ top: 8, right: 8, bottom: 8, left: -16 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -158,7 +158,11 @@ const DashboardPage = () => {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Exam trend (avg %)" empty={trendData.length === 0}>
+        <ChartCard
+          title="Exam trend"
+          info="Average score (%) across exams in order. A rising line means students are improving over the term."
+          empty={trendData.length === 0}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={trendData} margin={{ top: 8, right: 8, bottom: 8, left: -16 }}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -179,7 +183,11 @@ const DashboardPage = () => {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Pass / Fail / Absent" empty={passFailData.length === 0}>
+        <ChartCard
+          title="Pass / Fail / Absent"
+          info="Share of your students' results that passed (≥40%), failed, or were marked absent."
+          empty={passFailData.length === 0}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie data={passFailData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={90} paddingAngle={2}>
@@ -193,7 +201,11 @@ const DashboardPage = () => {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Grade distribution" empty={gradeData.every((g) => g.count === 0)}>
+        <ChartCard
+          title="Grade distribution"
+          info="How many students fall in each grade band, from A+ down to F."
+          empty={gradeData.every((g) => g.count === 0)}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={gradeData} margin={{ top: 8, right: 8, bottom: 8, left: -16 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -210,17 +222,14 @@ const DashboardPage = () => {
         </ChartCard>
       </Box>
 
-      {/* Homeroom (class teacher) whole-class analytics — renders only for class teachers */}
-      <HomeroomPanel />
-
-      {/* Score change log */}
+      {/* Score change log — homeroom (class-teacher) classes only */}
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Score change log
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            Changes to your classes' marks only.
+            Every teacher's mark changes for the classes you are class teacher of.
           </Typography>
           <Box sx={{ overflowX: 'auto', border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
             <Table
@@ -245,7 +254,7 @@ const DashboardPage = () => {
                 {logs.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={7} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                      No changes recorded yet.
+                      No changes to your homeroom classes yet (or you aren't a class teacher).
                     </TableCell>
                   </TableRow>
                 )}
